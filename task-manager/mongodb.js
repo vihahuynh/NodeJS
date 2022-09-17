@@ -4,9 +4,7 @@
 // const MongoClient = mongodb.MongoClient;
 // const ObjectID = mongodb.ObjectID
 
-const { MongoClient, ObjectID, ObjectId } = require("mongodb")
-
-
+const { MongoClient, ObjectID, ObjectId } = require("mongodb");
 
 const connectionURL =
   "mongodb+srv://nemo-admin:Anhduy2507@cluster0.7qy3g.mongodb.net/?retryWrites=true&w=majority";
@@ -56,9 +54,9 @@ MongoClient.connect(
 
     // db.collection("tasks").insertMany(
     //   [
-    //     { description: "A", completed: true },
-    //     { description: "B", completed: false },
-    //     { description: "C", completed: true },
+    //     { description: "Z", completed: false },
+    //     { description: "Y", completed: false },
+    //     { description: "Z", completed: true },
     //   ],
     //   (error, result) => {
     //     if (error) {
@@ -67,13 +65,12 @@ MongoClient.connect(
 
     //     console.log(result.ops);
     //   }
-    // )
+    // );
 
     // const id = new ObjectID()
     // const time = id.getTimestamp()
 
     // console.log("id: ", id, " - time: ", time)
-
 
     // db.collection("users").insertOne(
     //   {
@@ -109,14 +106,27 @@ MongoClient.connect(
     //   return console.log(user)
     // })
 
-    db.collection("users").find({ name: "Nemo" }).toArray((error, users) => {
-      if (error) {
-        return console.log("Unable to fetch.")
-      }
-      if (!users.length) {
-        return console.log("No user found.")
-      }
-      return console.log(users)
-    })
+    // db.collection("users").find({ name: "Nemo" }).toArray((error, users) => {
+    //   if (error) {
+    //     return console.log("Unable to fetch.")
+    //   }
+    //   if (!users.length) {
+    //     return console.log("No user found.")
+    //   }
+    //   return console.log(users)
+    // })
+
+    // db.collection("users")
+    //   .updateOne(
+    //     { _id: new ObjectId("6321d28ad109512174c9b832") },
+    //     { $set: { name: "Nemo" } }
+    //   )
+    //   .then((result) => console.log(result))
+    //   .catch((err) => console.log(err));
+
+    // db.collection("tasks")
+    //   .updateMany({ completed: false }, { $set: { completed: true } })
+    //   .then((result) => console.log(result.modifiedCount))
+    //   .catch((err) => console.log(err));
   }
 );
