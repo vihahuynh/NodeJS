@@ -7,7 +7,7 @@
 const { MongoClient, ObjectID, ObjectId } = require("mongodb");
 
 const connectionURL =
-  "mongodb+srv://nemo-admin:Anhduy2507@cluster0.7qy3g.mongodb.net/?retryWrites=true&w=majority";
+  "mongodb+srv://nemo-admin:pw@cluster0.7qy3g.mongodb.net/?retryWrites=true&w=majority";
 const databaseName = "task-manager";
 
 MongoClient.connect(
