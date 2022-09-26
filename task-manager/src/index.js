@@ -40,6 +40,25 @@ app.get("/users/:id", async (req, res) => {
   }
 });
 
+app.patch("/users/:id", async (req, res) => {
+  try {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ["name", "email", "password", "age"]
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    if (!isValidOperation) {
+      return res.status(404).json({ err: "Invalid updates!" })
+    }
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+    console.log(user)
+    if (!user) {
+      return res.status(404).json({ messge: "User not found" })
+    }
+    return res.json(user)
+  } catch (err) {
+    res.status(400).json(err)
+  }
+})
+
 app.post("/tasks", async (req, res) => {
   const { body } = req;
   const newTask = new Task(body);
@@ -70,6 +89,24 @@ app.get("/tasks/:id", async (req, res) => {
     res.status(400).json(err);
   }
 });
+
+app.patch("/tasks/:id", async (req, res) => {
+  try {
+    const updates = Object.keys(req.body)
+    const allowedUpdate = ["completed", "description"]
+    const isValidOperation = updates.every(update => allowedUpdate.includes(update))
+    if (!isValidOperation) {
+      return res.status(400).json({ err: "Invalied updates!" })
+    }
+    const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+    if (!task) {
+      return res.json(404).json({ message: "No task found" })
+    }
+    return res.json(task)
+  } catch (err) {
+    res.status(400).json(err)
+  }
+})
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
