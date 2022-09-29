@@ -41,10 +41,14 @@ taskRouter.patch("/:id", async (req, res) => {
         if (!isValidOperation) {
             return res.status(400).json({ err: "Invalied updates!" })
         }
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        const task = await Task.findById(req.params.id)
         if (!task) {
             return res.json(404).json({ message: "No task found" })
         }
+        updates.forEach((update) => task[update] = req.body[update])
+        await task.save()
+        // const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+
         return res.json(task)
     } catch (err) {
         res.status(400).json(err)

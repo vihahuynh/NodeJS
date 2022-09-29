@@ -1,4 +1,5 @@
 const express = require("express");
+const bcrytjs = require("bcryptjs")
 require("./db/mongoose");
 
 const userRouter = require("./routers/user")
@@ -15,3 +16,4 @@ app.use("/tasks", taskRouter)
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
+

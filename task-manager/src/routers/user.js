@@ -41,7 +41,15 @@ userRouter.patch("/:id", async (req, res) => {
         if (!isValidOperation) {
             return res.status(404).json({ err: "Invalid updates!" })
         }
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        const user = await User.findById(req.params.id)
+        if (!user) {
+            res.status(404).json({ message: "User not found" })
+        }
+        updates.forEach((update) => {
+            user[update] = req.body[update]
+        })
+        await user.save()
+        // const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
         console.log(user)
         if (!user) {
             return res.status(404).json({ messge: "User not found" })
