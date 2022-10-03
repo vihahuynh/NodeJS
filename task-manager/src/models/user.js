@@ -77,6 +77,14 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    delete returnedObject.__v;
+    delete returnedObject.password;
+    delete returnedObject.tokens
+  },
+});
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
