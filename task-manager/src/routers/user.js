@@ -11,10 +11,29 @@ userRouter.post("/login", async (req, res) => {
     const token = await user.generateAuthToken();
     res.json({ user, token });
   } catch (err) {
-    console.log(err);
     res.status(400).send();
   }
 });
+
+userRouter.post("/logout", auth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter(token => token.token !== req.token)
+    await req.user.save()
+    res.send()
+  } catch (err) {
+    res.status(500).send()
+  }
+})
+
+userRouter.post("/logoutAll", auth, async (req, res) => {
+  try {
+    req.user.tokens = []
+    await req.user.save()
+    res.send()
+  } catch (err) {
+    res.status(500).send()
+  }
+})
 
 userRouter.post("/", async (req, res) => {
   try {
@@ -27,13 +46,8 @@ userRouter.post("/", async (req, res) => {
   }
 });
 
-userRouter.get("/", auth, async (req, res) => {
-  try {
-    const allUsers = await User.find();
-    res.json(allUsers);
-  } catch (err) {
-    res.status(400).json(err);
-  }
+userRouter.get("/me", auth, async (req, res) => {
+  res.json(req.user)
 });
 
 userRouter.get("/:id", async (req, res) => {
@@ -66,7 +80,6 @@ userRouter.patch("/:id", async (req, res) => {
       user[update] = req.body[update];
     });
     await user.save();
-    // const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
     console.log(user);
     if (!user) {
       return res.status(404).json({ messge: "User not found" });
