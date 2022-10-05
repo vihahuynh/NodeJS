@@ -1,9 +1,10 @@
 const taskRouter = require("express").Router()
 const Task = require("./../models/task");
+const auth = require("./../middleware/auth")
 
-taskRouter.post("/", async (req, res) => {
+taskRouter.post("/", auth, async (req, res) => {
     const { body } = req;
-    const newTask = new Task(body);
+    const newTask = new Task({ ...body, owner: req.user._id });
     try {
         await newTask.save();
         res.status(201).json(newTask);
@@ -12,18 +13,21 @@ taskRouter.post("/", async (req, res) => {
     }
 });
 
-taskRouter.get("/", async (req, res) => {
+taskRouter.get("/", auth, async (req, res) => {
     try {
-        const allTasks = await Task.find();
+        const allTasks = await Task.find({ owner: req.user._id });
         res.json(allTasks)
     } catch (err) {
         res.status(400).json(err);
     }
 });
 
-taskRouter.get("/:id", async (req, res) => {
+taskRouter.get("/:id", auth, async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id);
+        const task = await Task.findOne({
+            _id: req.params.id,
+            owner: req.user._id
+        });
         if (!task) {
             return res.status(404).json({ message: "No task found" });
         }
@@ -33,7 +37,7 @@ taskRouter.get("/:id", async (req, res) => {
     }
 });
 
-taskRouter.patch("/:id", async (req, res) => {
+taskRouter.patch("/:id", auth, async (req, res) => {
     try {
         const updates = Object.keys(req.body)
         const allowedUpdate = ["completed", "description"]
@@ -41,9 +45,12 @@ taskRouter.patch("/:id", async (req, res) => {
         if (!isValidOperation) {
             return res.status(400).json({ err: "Invalied updates!" })
         }
-        const task = await Task.findById(req.params.id)
+        const task = await Task.findOne({
+            _id: req.params.id,
+            owner: req.user._id
+        });
         if (!task) {
-            return res.json(404).json({ message: "No task found" })
+            return res.status(404).json({ err: "No task found" })
         }
         updates.forEach((update) => task[update] = req.body[update])
         await task.save()
@@ -53,9 +60,12 @@ taskRouter.patch("/:id", async (req, res) => {
     }
 })
 
-taskRouter.delete("/tasks/:id", async (res, req) => {
+taskRouter.delete("/:id", auth, async (req, res) => {
     try {
-        await Task.findByIdAndDelete(req.params.id)
+        await Task.findOneAndDelete({
+            _id: req.params.id,
+            owner: req.user._id
+        });
         res.status(204).send()
     } catch (err) {
         res.status(400).json(err)
