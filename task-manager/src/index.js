@@ -25,8 +25,10 @@ const upload = multer({
   }
 })
 
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/upload', upload.single('upload'), (req, res) => {
   res.send()
+}, (err, req, res, next) => {
+  res.status(400).json({ err: err.message })
 })
 
 app.use(express.json());

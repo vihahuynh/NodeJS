@@ -4,7 +4,7 @@ const User = require("./../models/user");
 const multer = require("multer")
 
 const upload = multer({
-  dest: 'avatars',
+  // dest: 'avatars',
   limits: {
     fileSize: 1000000
   },
@@ -105,8 +105,18 @@ userRouter.delete("/me", auth, async (req, res) => {
   }
 });
 
-userRouter.post("/me/avatar", upload.single('avatar'), (req, res) => {
+userRouter.post("/me/avatar", auth, upload.single('avatar'), async (req, res) => {
+  req.user.avatar = req.file.buffer
+  await req.user.save()
   res.send()
+}, (err, req, res, next) => {
+  res.status(400).json({ err: err.message })
+})
+
+userRouter.delete("/me/avatar", auth, async (req, res) => {
+  req.user.avatar = undefined
+  await req.user.save()
+  res.status(204).send()
 })
 
 module.exports = userRouter;
