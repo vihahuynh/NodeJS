@@ -1,7 +1,8 @@
 const userRouter = require("express").Router();
 const auth = require("./../middleware/auth");
 const User = require("./../models/user");
-const multer = require("multer")
+const multer = require("multer");
+const sharp = require("sharp");
 
 const upload = multer({
   // dest: 'avatars',
@@ -106,7 +107,12 @@ userRouter.delete("/me", auth, async (req, res) => {
 });
 
 userRouter.post("/me/avatar", auth, upload.single('avatar'), async (req, res) => {
-  req.user.avatar = req.file.buffer
+  const buffer = await sharp(req.file.buffer)
+    .png()
+    .resize({ width: 250, height: 250 })
+    .toBuffer()
+
+  req.user.avatar = buffer
   await req.user.save()
   res.send()
 }, (err, req, res, next) => {
@@ -117,6 +123,19 @@ userRouter.delete("/me/avatar", auth, async (req, res) => {
   req.user.avatar = undefined
   await req.user.save()
   res.status(204).send()
+})
+
+userRouter.get("/:id/avatar", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+    if (!user || !user.avatar) {
+      throw new Error()
+    }
+    res.set('Content-Type', 'image/png')
+    res.send(user.avatar)
+  } catch (err) {
+    res.status(404).send()
+  }
 })
 
 module.exports = userRouter;

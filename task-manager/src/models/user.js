@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const sharp = require("sharp")
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 const Task = require("./task")
@@ -104,6 +105,7 @@ userSchema.set("toJSON", {
     delete returnedObject.__v;
     delete returnedObject.password;
     delete returnedObject.tokens
+    delete returnedObject.avatar
   },
 });
 
